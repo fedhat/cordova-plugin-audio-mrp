@@ -69,7 +69,7 @@ typedef NSUInteger CDVAMRPMediaMsg;
 @property (nonatomic, copy) NSString* mediaId;
 @end
 
-@interface CDVAMRPFile : NSObject {
+@interface CDVAMRPAudioFile : NSObject {
     NSString* resourcePath;
     NSURL* resourceURL;
     CDVAMRPAudioPlayer* player;
@@ -80,11 +80,11 @@ typedef NSUInteger CDVAMRPMediaMsg;
 
 @property (nonatomic, strong) NSString* resourcePath;
 @property (nonatomic, strong) NSURL* resourceURL;
-@property (nonatomic, strong) CDVAMRPPlayer* player;
+@property (nonatomic, strong) CDVAMRPAudioPlayer* player;
 @property (nonatomic, strong) NSNumber* volume;
 @property (nonatomic, strong) NSNumber* rate;
 
-@property (nonatomic, strong) CDVAMRPRecorder* recorder;
+@property (nonatomic, strong) CDVAMRPAudioRecorder* recorder;
 
 @end
 
@@ -119,8 +119,8 @@ typedef NSUInteger CDVAMRPMediaMsg;
 - (BOOL)hasAudioSession;
 - (NSURL*)urlForRecording:(NSString*)resourcePath;
 - (NSURL*)urlForPlaying:(NSString*)resourcePath;
-- (CDVAMRPFile*)audioFileForResource:(NSString*)resourcePath withId:(NSString*)mediaId doValidation:(BOOL)bValidate forRecording:(BOOL)bRecord;
-- (BOOL)prepareToPlay:(CDVAMRPFile*)audioFile withId:(NSString*)mediaId;
+- (CDVAMRPAudioFile*)audioFileForResource:(NSString*)resourcePath withId:(NSString*)mediaId doValidation:(BOOL)bValidate forRecording:(BOOL)bRecord;
+- (BOOL)prepareToPlay:(CDVAMRPAudioFile*)audioFile withId:(NSString*)mediaId;
 - (NSString*)createMediaErrorWithCode:(CDVAMRPMediaError)code message:(NSString*)message;
 - (void)runAudioMetering: (id<CDVAMRPPlayer>) recorder;
 - (void)stopAudioMetering;
