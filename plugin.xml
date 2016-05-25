@@ -44,11 +44,11 @@ id="cordova-plugin-audio-mrp"
      <platform name="ios">
          <config-file target="config.xml" parent="/*">
              <feature name="AudioMRP">
-                 <param name="ios-package" value="CDVSound" />
+                 <param name="ios-package" value="CDVAudioMRP" />
              </feature>
          </config-file>
-         <header-file src="src/ios/CDVSound.h" />
-         <source-file src="src/ios/CDVSound.m" />
+         <header-file src="src/ios/CDVAudioMRP.h" />
+         <source-file src="src/ios/CDVAudioMRP.m" />
      </platform>
 
 </plugin>
