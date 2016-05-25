@@ -15,7 +15,7 @@
  under the License.
  */
 
-#import "CDVSound.h"
+#import "CDVAudioMRP.h"
 #import "CDVFile.h"
 #import <AVFoundation/AVFoundation.h>
 
@@ -25,7 +25,7 @@
 #define CDVFILE_PREFIX @"cdvfile://"
 #define RECORDING_WAV @"wav"
 
-@implementation CDVSound
+@implementation CDVAudioMRP
 
 @synthesize soundCache, avSession, currMediaId, currDuration, meterTimer, isMeteringEnabled;
 
@@ -40,13 +40,13 @@
     self.isMeteringEnabled = meteringEnabled;
     self.currDuration = -1;
     
-    CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:NO forRecording:NO];
+    CDVAMRPFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:NO forRecording:NO];
     
-    NSLog(@"iOS: Creating AudioMRP Object with ID: %@, and isMetering: %s", mediaId, self.isMeteringEnabled ? "TRUE":"FALSE");
+    NSLog(@"iOS: Creating AMRP Object with ID: %@, and isMetering: %s", mediaId, self.isMeteringEnabled ? "TRUE":"FALSE");
     
     if (audioFile == nil) {
-        NSString* errorMessage = [NSString stringWithFormat:@"iOS: Failed to initialize AudioMRP file with path %@", resourcePath];
-        NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_ABORTED message:errorMessage]];
+        NSString* errorMessage = [NSString stringWithFormat:@"iOS: Failed to initialize AMRP file with path %@", resourcePath];
+        NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_ABORTED message:errorMessage]];
         [self.commandDelegate evalJs:jsString];
     } else {
         NSURL* resourceUrl = [[NSURL alloc] initWithString:resourcePath];
@@ -85,14 +85,14 @@
             NSLog(@"Permission granted");
             
             result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:YES];
-            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%s);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_MICROPHONE_ACCESS, (granted ? "true" : "false")];
+            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%s);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_MICROPHONE_ACCESS, (granted ? "true" : "false")];
             
         }
         else {
             NSLog(@"Permission denied");
             
             result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:NO];
-            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%s);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_MICROPHONE_ACCESS, (granted ? "true" : "false")];
+            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%s);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_MICROPHONE_ACCESS, (granted ? "true" : "false")];
             
         }
         
@@ -110,7 +110,7 @@
     NSNumber* volume = [command argumentAtIndex:1 withDefault:[NSNumber numberWithFloat:1.0]];
 
     if ([self soundCache] != nil) {
-        CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
+        CDVAMRPFile* audioFile = [[self soundCache] objectForKey:mediaId];
         if (audioFile != nil) {
             audioFile.volume = volume;
             if (audioFile.player) {
@@ -131,7 +131,7 @@
     NSNumber* rate = [command argumentAtIndex:1 withDefault:[NSNumber numberWithFloat:1.0]];
 
     if ([self soundCache] != nil) {
-        CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
+        CDVAMRPFile* audioFile = [[self soundCache] objectForKey:mediaId];
         if (audioFile != nil) {
             audioFile.rate = rate;
             if (audioFile.player) {
@@ -162,7 +162,7 @@
     BOOL bError = NO;
     NSString* jsString = nil;
 
-    CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:YES forRecording:NO];
+    CDVAMRPFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:YES forRecording:NO];
 
     NSLog(@"iOS: startPlayingAudio: got audioFile (nil = %s)", (audioFile == nil ? "true":"false"));
 
@@ -237,7 +237,7 @@
                     NSLog(@"iOS: Playing audio from audioFile.player with duration: %f", self.currDuration);
                 }
                 
-                jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_START];
+                jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_START];
 
                 [self.commandDelegate evalJs:jsString];
             }
@@ -259,14 +259,14 @@
                 [audioFile.player play];
             } */
             // error creating the session or player
-            // jsString = [NSString stringWithFormat: @"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_ERROR,  MEDIA_ERR_NONE_SUPPORTED];
-            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_NONE_SUPPORTED message:nil]];
+            // jsString = [NSString stringWithFormat: @"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_ERROR,  MEDIA_ERR_NONE_SUPPORTED];
+            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_NONE_SUPPORTED message:nil]];
             [self.commandDelegate evalJs:jsString];
         }
     }
 }
 
-- (BOOL)prepareToPlay:(CDVAudioFile*)audioFile withId:(NSString*)mediaId {
+- (BOOL)prepareToPlay:(CDVAMRPFile*)audioFile withId:(NSString*)mediaId {
     NSLog(@"iOS: prepareToPlay");
     BOOL bError = NO;
     NSError* __autoreleasing playerError = nil;
@@ -275,8 +275,8 @@
     NSURL* resourceURL = audioFile.resourceURL;
 
     if ([resourceURL isFileURL]) {
-        NSLog(@"iOS: prepareToPlay: resourceURL is file, creating new CDVAudioPlayer");
-        audioFile.player = [[CDVAudioPlayer alloc] initWithContentsOfURL:resourceURL error:&playerError];
+        NSLog(@"iOS: prepareToPlay: resourceURL is file, creating new CDVAMRPAudioPlayer");
+        audioFile.player = [[CDVAMRPAudioPlayer alloc] initWithContentsOfURL:resourceURL error:&playerError];
         
     } else {
         NSLog(@"prepareToPlay: ORPHANED ELSE");
@@ -299,7 +299,7 @@
             CFRelease(uuidRef);
             [data writeToFile:filePath atomically:YES];
             NSURL* fileURL = [NSURL fileURLWithPath:filePath];
-            audioFile.player = [[CDVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&playerError];
+            audioFile.player = [[CDVAMRPAudioPlayer alloc] initWithContentsOfURL:fileURL error:&playerError];
         }
         */
     }
@@ -326,14 +326,14 @@
 
 - (void)stopPlayingAudio:(CDVInvokedUrlCommand*)command {
     NSString* mediaId = [command argumentAtIndex:0];
-    CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
+    CDVAMRPFile* audioFile = [[self soundCache] objectForKey:mediaId];
     NSString* jsString = nil;
 
     if ((audioFile != nil) && (audioFile.player != nil)) {
         NSLog(@"iOS: Stopped playing audioFile sample '%@'", audioFile.resourcePath);
         [audioFile.player stop];
         audioFile.player.currentTime = 0;
-        jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_STOP];
+        jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_STOP];
     }
     
     if (avPlayer.currentItem && avPlayer.currentItem.asset) {
@@ -344,7 +344,7 @@
                    completionHandler: ^(BOOL finished){
                            if (finished) [avPlayer pause];
                        }];
-        jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_STOP];
+        jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_STOP];
     }
     // ignore if no media playing
     if (jsString) {
@@ -356,7 +356,7 @@
 - (void)pausePlayingAudio:(CDVInvokedUrlCommand*)command {
     NSString* mediaId = [command argumentAtIndex:0];
     NSString* jsString = nil;
-    CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
+    CDVAMRPFile* audioFile = [[self soundCache] objectForKey:mediaId];
 
     if ((audioFile != nil) && ((audioFile.player != nil) || (avPlayer != nil))) {
         if (audioFile.player != nil) {
@@ -367,7 +367,7 @@
             [avPlayer pause];
         }
 
-        jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_PAUSE];
+        jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_PAUSE];
     }
     // ignore if no media playing
 
@@ -384,7 +384,7 @@
 
     NSString* mediaId = [command argumentAtIndex:0];
 
-    CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
+    CDVAMRPFile* audioFile = [[self soundCache] objectForKey:mediaId];
     double position = [[command argumentAtIndex:1] doubleValue];
     double posInSeconds = position / 1000;
     NSString* jsString;
@@ -395,11 +395,11 @@
             // The seek is past the end of file.  Stop media and reset to beginning instead of seeking past the end.
             [audioFile.player stop];
             audioFile.player.currentTime = 0;
-            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);\n%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_POSITION, 0.0, @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_STOP];
+            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);\n%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_POSITION, 0.0, @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_STOP];
             // NSLog(@"seekToEndJsString=%@",jsString);
         } else {
             audioFile.player.currentTime = posInSeconds;
-            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%f);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_POSITION, posInSeconds];
+            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%f);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_POSITION, posInSeconds];
             // NSLog(@"seekJsString=%@",jsString);
         }
 
@@ -421,9 +421,9 @@
                    if (isPlaying) [avPlayer play];
                }];
         } else {
-            CDVMediaError errcode = MEDIA_ERR_ABORTED;
+            CDVAMRPMediaError errcode = MEDIA_ERR_ABORTED;
             NSString* errMsg = @"AVPlayerItem cannot service a seek request with a completion handler until its status is AVPlayerItemStatusReadyToPlay.";
-            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:errcode message:errMsg]];
+            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:errcode message:errMsg]];
         }
     }
 
@@ -435,7 +435,7 @@
     NSString* mediaId = [command argumentAtIndex:0];
 
     if (mediaId != nil) {
-        CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
+        CDVAMRPFile* audioFile = [[self soundCache] objectForKey:mediaId];
 
         if (audioFile != nil) {
             if (audioFile.player && [audioFile.player isPlaying]) {
@@ -453,7 +453,7 @@
                 self.avSession = nil;
             }
             [[self soundCache] removeObjectForKey:mediaId];
-            NSLog(@"iOS: AudioMRP with id %@ released", mediaId);
+            NSLog(@"iOS: AMRP with id %@ released", mediaId);
         }
     }
     
@@ -468,7 +468,7 @@
     NSString* mediaId = [command argumentAtIndex:0];
 
 #pragma unused(mediaId)
-    CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
+    CDVAMRPFile* audioFile = [[self soundCache] objectForKey:mediaId];
     double position = -1;
 
     if ((audioFile != nil) && (audioFile.player != nil) && [audioFile.player isPlaying]) {
@@ -481,7 +481,7 @@
 
     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:position];
     
-    NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_POSITION, position];
+    NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_POSITION, position];
     [self.commandDelegate evalJs:jsString];
     [self.commandDelegate sendPluginResult:result callbackId:callbackId];
 }
@@ -492,7 +492,7 @@
     NSString* mediaId = [command argumentAtIndex:0];
 
 #pragma unused(mediaId)
-    CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
+    CDVAMRPFile* audioFile = [[self soundCache] objectForKey:mediaId];
 //    double duration = -1;
 //
 //    NSLog(@"iOS: audioFile (nil=%s) audioFile.player (nil=%s)", (audioFile = nil)?"true":"false", (audioFile.player = nil)?"true":"false");
@@ -504,8 +504,8 @@
 
     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble: self.currDuration];
     
-//    NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_DURATION, duration];
-    NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_DURATION, self.currDuration];
+//    NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_DURATION, duration];
+    NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_DURATION, self.currDuration];
     [self.commandDelegate evalJs:jsString];
     [self.commandDelegate sendPluginResult:result callbackId:callbackId];
 }
@@ -517,13 +517,13 @@
 
     NSString* mediaId = [command argumentAtIndex:0];
     NSLog(@"iOS: StartRecordingAudio with ID: %@, and PATH: %@", mediaId, [command argumentAtIndex:1]);
-    CDVAudioFile* audioFile = [self audioFileForResource:[command argumentAtIndex:1] withId:mediaId doValidation:YES forRecording:YES];
+    CDVAMRPFile* audioFile = [self audioFileForResource:[command argumentAtIndex:1] withId:mediaId doValidation:YES forRecording:YES];
     __block NSString* jsString = nil;
     __block NSString* errorMsg = @"";
 
     if ((audioFile != nil) && (audioFile.resourceURL != nil)) {
 
-        __weak CDVSound* weakSelf = self;
+        __weak CDVAudioMRP* weakSelf = self;
 
         // START: Recording block
         void (^startRecording)(void) = ^{
@@ -542,7 +542,7 @@
                 if (![weakSelf.avSession setActive:YES error:&error]) {
                     // other audio with higher priority that does not allow mixing could cause this to fail
                     errorMsg = [NSString stringWithFormat:@"Unable to record audio: %@", [error localizedFailureReason]];
-                    jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_ERROR, [weakSelf createMediaErrorWithCode:MEDIA_ERR_ABORTED message:errorMsg]];
+                    jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_ERROR, [weakSelf createMediaErrorWithCode:MEDIA_ERR_ABORTED message:errorMsg]];
                     [weakSelf.commandDelegate evalJs:jsString];
                     return;
                 }
@@ -556,7 +556,7 @@
                                             [NSNumber numberWithFloat:44100.0], AVSampleRateKey,
                                             nil];
             // create a new recorder for each start record
-            audioFile.recorder = [[CDVAudioRecorder alloc] initWithURL:audioFile.resourceURL
+            audioFile.recorder = [[CDVAMRPAudioRecorder alloc] initWithURL:audioFile.resourceURL
                                                               settings:recordSettings
                                                                  error:&error];
             
@@ -568,7 +568,7 @@
                 
                 if (recordingSuccess) {
                     NSLog(@"iOS: Started recording audio sample '%@'", audioFile.resourcePath);
-                    jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_RECORD_START];
+                    jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_RECORD_START];
                     [weakSelf.commandDelegate evalJs:jsString];
                     
                     [self runAudioMetering: audioFile.recorder];
@@ -585,7 +585,7 @@
                 if (weakSelf.avSession) {
                     [weakSelf.avSession setActive:NO error:nil];
                 }
-                jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_ERROR, [weakSelf createMediaErrorWithCode:MEDIA_ERR_ABORTED message:errorMsg]];
+                jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_ERROR, [weakSelf createMediaErrorWithCode:MEDIA_ERR_ABORTED message:errorMsg]];
                 [weakSelf.commandDelegate evalJs:jsString];
             }
         };
@@ -606,7 +606,7 @@
                     if (weakSelf.avSession) {
                         [weakSelf.avSession setActive:NO error:nil];
                     }
-                    jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_ABORTED message:msg]];
+                    jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_ABORTED message:msg]];
                     [weakSelf.commandDelegate evalJs:jsString];
                 }
             }];
@@ -618,7 +618,7 @@
     } else {
         // file did not validate
         NSString* errorMsg = [NSString stringWithFormat:@"iOS: Could not record audio at '%@'", audioFile.resourcePath];
-        jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_ABORTED message:errorMsg]];
+        jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_ABORTED message:errorMsg]];
         [self.commandDelegate evalJs:jsString];
     }
 }
@@ -626,7 +626,7 @@
 - (void)stopRecordingAudio:(CDVInvokedUrlCommand*)command {
     NSString* mediaId = [command argumentAtIndex:0];
     NSLog(@"iOS: StopRecordingAudio with ID: %@", mediaId);
-    CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
+    CDVAMRPFile* audioFile = [[self soundCache] objectForKey:mediaId];
     NSString* jsString = nil;
 
     if ((audioFile != nil) && (audioFile.recorder != nil)) {
@@ -646,14 +646,14 @@
 /** START: HELPER METHODS AND EVENT HANDLERS **/
 
 // Creates or gets the cached audio file resource object
-- (CDVAudioFile*)audioFileForResource:(NSString*)resourcePath withId:(NSString*)mediaId doValidation:(BOOL)bValidate forRecording:(BOOL)bRecord {
+- (CDVAMRPFile*)audioFileForResource:(NSString*)resourcePath withId:(NSString*)mediaId doValidation:(BOOL)bValidate forRecording:(BOOL)bRecord {
     NSLog(@"iOS: Creating audioFile: path: %@, id: %@", resourcePath, mediaId);
     
     BOOL bError = NO;
-    CDVMediaError errcode = MEDIA_ERR_NONE_SUPPORTED;
+    CDVAMRPMediaError errcode = MEDIA_ERR_NONE_SUPPORTED;
     NSString* errMsg = @"";
     NSString* jsString = nil;
-    CDVAudioFile* audioFile = nil;
+    CDVAMRPFile* audioFile = nil;
     NSURL* resourceURL = nil;
     
     if ([self soundCache] == nil) {
@@ -668,7 +668,7 @@
             errcode = MEDIA_ERR_ABORTED;
             errMsg = @"invalid media src argument";
         } else {
-            audioFile = [[CDVAudioFile alloc] init];
+            audioFile = [[CDVAMRPFile alloc] init];
             audioFile.resourcePath = resourcePath;
             audioFile.resourceURL = nil;  // validate resourceURL when actually play or record
             [[self soundCache] setObject:audioFile forKey:mediaId];
@@ -690,7 +690,7 @@
     }
     
     if (bError) {
-        jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:errcode message:errMsg]];
+        jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:errcode message:errMsg]];
         [self.commandDelegate evalJs:jsString];
     }
     
@@ -819,7 +819,7 @@
 }
 
 // helper function to create a error object string
-- (NSString*)createMediaErrorWithCode:(CDVMediaError)code message:(NSString*)message
+- (NSString*)createMediaErrorWithCode:(CDVAMRPMediaError)code message:(NSString*)message
 {
     NSMutableDictionary* errorDict = [NSMutableDictionary dictionaryWithCapacity:2];
     
@@ -834,9 +834,9 @@
 // AVAudioRecorderDelegate protocol
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder*)recorder successfully:(BOOL)flag
 {
-    CDVAudioRecorder* aRecorder = (CDVAudioRecorder*)recorder;
+    CDVAMRPAudioRecorder* aRecorder = (CDVAMRPAudioRecorder*)recorder;
     NSString* mediaId = aRecorder.mediaId;
-    CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
+    CDVAMRPFile* audioFile = [[self soundCache] objectForKey:mediaId];
     NSString* jsString = nil;
 
     if (audioFile != nil) {
@@ -844,9 +844,9 @@
     }
     
     if (flag) {
-        jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_RECORD_STOP];
+        jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_RECORD_STOP];
     } else {
-        jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_DECODE message:nil]];
+        jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_DECODE message:nil]];
     }
     
     if (self.avSession) {
@@ -861,9 +861,9 @@
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer*)player successfully:(BOOL)flag
 {
     //commented as unused
-    CDVAudioPlayer* aPlayer = (CDVAudioPlayer*)player;
+    CDVAMRPAudioPlayer* aPlayer = (CDVAMRPAudioPlayer*)player;
     NSString* mediaId = aPlayer.mediaId;
-    CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
+    CDVAMRPFile* audioFile = [[self soundCache] objectForKey:mediaId];
     NSString* jsString = nil;
 
     if (audioFile != nil) {
@@ -872,9 +872,9 @@
     
     if (flag) {
         audioFile.player.currentTime = 0;
-        jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_COMPLETE];
+        jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_COMPLETE];
     } else {
-        jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_DECODE message:nil]];
+        jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_DECODE message:nil]];
     }
     
     if (self.avSession) {
@@ -889,7 +889,7 @@
     // Will be called when AVPlayer finishes playing playerItem
     NSString* mediaId = self.currMediaId;
     NSString* jsString = nil;
-    jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_COMPLETE];
+    jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_COMPLETE];
 
     if (self.avSession) {
         [self.avSession setActive:NO error:nil];
@@ -899,7 +899,7 @@
     [self.commandDelegate evalJs:jsString];
 }
 
--(void)runAudioMetering: (id<CDVPlayer>) player {
+-(void)runAudioMetering: (id<CDVAMRPPlayer>) player {
     NSLog(@"iOS: runAudioMetering: isMeteringEnabled: %s", self.isMeteringEnabled ? "TRUE":"FALSE");
     if (self.isMeteringEnabled == YES) {
         player.meteringEnabled = YES;
@@ -919,7 +919,7 @@
     }
 }
 
--(NSNumber*)calcAudioLevel:(id<CDVPlayer>) player {
+-(NSNumber*)calcAudioLevel:(id<CDVAMRPPlayer>) player {
     [player updateMeters];
     NSNumber* level = [NSNumber numberWithFloat: [player averagePowerForChannel:0]];
     return level;
@@ -952,7 +952,7 @@
     //NSLog(@"iOS: Scaled Audio Level: %@", [NSNumber numberWithInt: scaledAudioLevel]);
     
     NSString* mediaId = self.currMediaId;
-    NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_AUDIO_LEVEL, [NSNumber numberWithInt: scaledAudioLevel]];
+    NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AMRP').onStatus", mediaId, MEDIA_AUDIO_LEVEL, [NSNumber numberWithInt: scaledAudioLevel]];
     [self.commandDelegate evalJs:jsString];
 }
 
@@ -974,7 +974,7 @@
 }
 
 - (void)onReset {
-    for (CDVAudioFile* audioFile in [[self soundCache] allValues]) {
+    for (CDVAMRPFile* audioFile in [[self soundCache] allValues]) {
         if (audioFile != nil) {
             if (audioFile.player != nil) {
                 [audioFile.player stop];
@@ -991,7 +991,7 @@
 
 @end
 
-@implementation CDVAudioFile
+@implementation CDVAMRPFile
 
 @synthesize resourcePath;
 @synthesize resourceURL;
@@ -999,12 +999,12 @@
 @synthesize recorder;
 
 @end
-@implementation CDVAudioPlayer
+@implementation CDVAMRPAudioPlayer
 @synthesize mediaId;
 
 @end
 
-@implementation CDVAudioRecorder
+@implementation CDVAMRPAudioRecorder
 @synthesize mediaId;
 
 @end

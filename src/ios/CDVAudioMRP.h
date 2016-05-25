@@ -21,15 +21,15 @@
 
 #import <Cordova/CDVPlugin.h>
 
-enum CDVMediaError {
+enum CDVAMRPMediaError {
     MEDIA_ERR_ABORTED = 1,
     MEDIA_ERR_NETWORK = 2,
     MEDIA_ERR_DECODE = 3,
     MEDIA_ERR_NONE_SUPPORTED = 4
 };
-typedef NSUInteger CDVMediaError;
+typedef NSUInteger CDVAMRPMediaError;
 
-enum CDVMediaStates {
+enum CDVAMRPMediaStates {
     MEDIA_NONE = 0,
     MEDIA_RECORD_START = 8,
     MEDIA_RECORD_STOP = 10,
@@ -38,9 +38,9 @@ enum CDVMediaStates {
     MEDIA_PLAY_STOP = 16,
     MEDIA_PLAY_COMPLETE = 18
 };
-typedef NSUInteger CDVMediaStates;
+typedef NSUInteger CDVAMRPMediaStates;
 
-enum CDVMediaMsg {
+enum CDVAMRPMediaMsg {
     MEDIA_STATE = 1,
     MEDIA_DURATION = 2,
     MEDIA_POSITION = 4,
@@ -48,47 +48,47 @@ enum CDVMediaMsg {
     MEDIA_MICROPHONE_ACCESS = 7,
     MEDIA_ERROR = 99
 };
-typedef NSUInteger CDVMediaMsg;
+typedef NSUInteger CDVAMRPMediaMsg;
 
-@protocol CDVPlayer
+@protocol CDVAMRPPlayer
     - (void) updateMeters;
     - (float) averagePowerForChannel: (NSUInteger) channelNumber;
 
 @property(getter=isMeteringEnabled) BOOL meteringEnabled;
 @end
 
-@interface CDVAudioPlayer : AVAudioPlayer <CDVPlayer> {
+@interface CDVAMRPAudioPlayer : AVAudioPlayer <CDVAMRPPlayer> {
     NSString* mediaId;
 }
 @property (nonatomic, copy) NSString* mediaId;
 @end
 
-@interface CDVAudioRecorder : AVAudioRecorder <CDVPlayer> {
+@interface CDVAMRPAudioRecorder : AVAudioRecorder <CDVAMRPPlayer> {
     NSString* mediaId;
 }
 @property (nonatomic, copy) NSString* mediaId;
 @end
 
-@interface CDVAudioFile : NSObject {
+@interface CDVAMRPFile : NSObject {
     NSString* resourcePath;
     NSURL* resourceURL;
-    CDVAudioPlayer* player;
-    CDVAudioRecorder* recorder;
+    CDVAMRPAudioPlayer* player;
+    CDVAMRPAudioRecorder* recorder;
     NSNumber* volume;
     NSNumber* rate;
 }
 
 @property (nonatomic, strong) NSString* resourcePath;
 @property (nonatomic, strong) NSURL* resourceURL;
-@property (nonatomic, strong) CDVAudioPlayer* player;
+@property (nonatomic, strong) CDVAMRPPlayer* player;
 @property (nonatomic, strong) NSNumber* volume;
 @property (nonatomic, strong) NSNumber* rate;
 
-@property (nonatomic, strong) CDVAudioRecorder* recorder;
+@property (nonatomic, strong) CDVAMRPRecorder* recorder;
 
 @end
 
-@interface CDVSound : CDVPlugin <AVAudioPlayerDelegate, AVAudioRecorderDelegate> {
+@interface CDVAudioMRP : CDVPlugin <AVAudioPlayerDelegate, AVAudioRecorderDelegate> {
     NSMutableDictionary* soundCache;
     NSString* currMediaId;
     AVAudioSession* avSession;
@@ -119,12 +119,12 @@ typedef NSUInteger CDVMediaMsg;
 - (BOOL)hasAudioSession;
 - (NSURL*)urlForRecording:(NSString*)resourcePath;
 - (NSURL*)urlForPlaying:(NSString*)resourcePath;
-- (CDVAudioFile*)audioFileForResource:(NSString*)resourcePath withId:(NSString*)mediaId doValidation:(BOOL)bValidate forRecording:(BOOL)bRecord;
-- (BOOL)prepareToPlay:(CDVAudioFile*)audioFile withId:(NSString*)mediaId;
-- (NSString*)createMediaErrorWithCode:(CDVMediaError)code message:(NSString*)message;
-- (void)runAudioMetering: (id<CDVPlayer>) recorder;
+- (CDVAMRPFile*)audioFileForResource:(NSString*)resourcePath withId:(NSString*)mediaId doValidation:(BOOL)bValidate forRecording:(BOOL)bRecord;
+- (BOOL)prepareToPlay:(CDVAMRPFile*)audioFile withId:(NSString*)mediaId;
+- (NSString*)createMediaErrorWithCode:(CDVAMRPMediaError)code message:(NSString*)message;
+- (void)runAudioMetering: (id<CDVAMRPPlayer>) recorder;
 - (void)stopAudioMetering;
-- (NSNumber*)calcAudioLevel:(id<CDVPlayer>) recorder;
+- (NSNumber*)calcAudioLevel:(id<CDVAMRPPlayer>) recorder;
 - (void)reportAudioLevel: (NSNumber*)audioLevel;
 
 @end
