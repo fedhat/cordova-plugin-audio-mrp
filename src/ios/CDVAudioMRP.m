@@ -850,7 +850,7 @@
     }
     
     if (self.avSession) {
-        [self.avSession setActive:NO error:nil];
+        //[self.avSession setActive:NO error:nil];
     }
     
     [self stopAudioMetering];
