@@ -308,7 +308,7 @@
         NSLog(@"iOS: Failed to initialize AVAudioPlayer: %@\n", [playerError localizedDescription]);
         audioFile.player = nil;
         if (self.avSession) {
-            [self.avSession setActive:NO error:nil];
+            //[self.avSession setActive:NO error:nil];
         }
         bError = YES;
     } else {
@@ -449,8 +449,8 @@
                 avPlayer = nil;
             }
             if (self.avSession) {
-                [self.avSession setActive:NO error:nil];
-                self.avSession = nil;
+                //[self.avSession setActive:NO error:nil];
+                //self.avSession = nil;
             }
             [[self soundCache] removeObjectForKey:mediaId];
             NSLog(@"iOS: AudioMRP with id %@ released", mediaId);
@@ -583,7 +583,7 @@
                 }
                 audioFile.recorder = nil;
                 if (weakSelf.avSession) {
-                    [weakSelf.avSession setActive:NO error:nil];
+                    //[weakSelf.avSession setActive:NO error:nil];
                 }
                 jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_ERROR, [weakSelf createMediaErrorWithCode:MEDIA_ERR_ABORTED message:errorMsg]];
                 [weakSelf.commandDelegate evalJs:jsString];
@@ -604,7 +604,7 @@
                     NSLog(@"%@", msg);
                     audioFile.recorder = nil;
                     if (weakSelf.avSession) {
-                        [weakSelf.avSession setActive:NO error:nil];
+                        //[weakSelf.avSession setActive:NO error:nil];
                     }
                     jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_ABORTED message:msg]];
                     [weakSelf.commandDelegate evalJs:jsString];
