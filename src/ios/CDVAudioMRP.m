@@ -878,7 +878,7 @@
     }
     
     if (self.avSession) {
-        [self.avSession setActive:NO error:nil];
+        //[self.avSession setActive:NO error:nil];
     }
     
     [self stopAudioMetering];
@@ -892,7 +892,7 @@
     jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_COMPLETE];
 
     if (self.avSession) {
-        [self.avSession setActive:NO error:nil];
+        //[self.avSession setActive:NO error:nil];
     }
     
     [self stopAudioMetering];
