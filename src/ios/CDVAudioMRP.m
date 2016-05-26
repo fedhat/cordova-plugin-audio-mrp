@@ -42,10 +42,10 @@
     
     CDVAMRPAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:NO forRecording:NO];
     
-    NSLog(@"iOS: Creating AMRP Object with ID: %@, and isMetering: %s", mediaId, self.isMeteringEnabled ? "TRUE":"FALSE");
+    NSLog(@"iOS: Creating AudioMRP Object with ID: %@, and isMetering: %s", mediaId, self.isMeteringEnabled ? "TRUE":"FALSE");
     
     if (audioFile == nil) {
-        NSString* errorMessage = [NSString stringWithFormat:@"iOS: Failed to initialize AMRP file with path %@", resourcePath];
+        NSString* errorMessage = [NSString stringWithFormat:@"iOS: Failed to initialize AudioMRP file with path %@", resourcePath];
         NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_ABORTED message:errorMessage]];
         [self.commandDelegate evalJs:jsString];
     } else {
@@ -453,7 +453,7 @@
                 self.avSession = nil;
             }
             [[self soundCache] removeObjectForKey:mediaId];
-            NSLog(@"iOS: AMRP with id %@ released", mediaId);
+            NSLog(@"iOS: AudioMRP with id %@ released", mediaId);
         }
     }
     
@@ -850,7 +850,7 @@
     }
     
     if (self.avSession) {
-        [self.avSession setActive:NO error:nil];
+        //[self.avSession setActive:NO error:nil];
     }
     
     [self stopAudioMetering];
