@@ -814,8 +814,10 @@
             self.avSession = nil;
             bSession = NO;
         } else {
+            NSLog(@"********* Checking if gain is settable");
             if (self.avSession.isInputGainSettable) {
-                [self.avSession setInputGain: 0.5];
+                NSLog(@"********* GAIN SET");
+                [self.avSession setInputGain: 0.75];
             }
         }
     }
