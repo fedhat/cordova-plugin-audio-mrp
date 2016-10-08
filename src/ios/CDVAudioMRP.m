@@ -813,6 +813,10 @@
             NSLog(@"error creating audio session: %@", [[error userInfo] description]);
             self.avSession = nil;
             bSession = NO;
+        } else {
+            if (self.avSession.isInputGainSettable) {
+                [self.avSession setInputGain: 0.5];
+            }
         }
     }
     return bSession;
