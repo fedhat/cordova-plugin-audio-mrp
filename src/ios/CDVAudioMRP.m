@@ -803,7 +803,7 @@
 - (BOOL)hasAudioSession
 {
     BOOL bSession = YES;
-    
+    NSLog(@"********* GETTING AUDIO SESSION");
     if (!self.avSession) {
         NSError* error = nil;
         
@@ -947,7 +947,7 @@
     // Formula: 10^(dB/20) * 100
     // (NOTE: By changing divide by to 10, you'll get a 'truer' conversion, but that also ads
     // more variability -- a lower floor -- to the linear values.)
-    double percentageAudioLevel = (pow(10, [audioLevel doubleValue]/20)) * 100;
+    double percentageAudioLevel = (pow(10, [audioLevel doubleValue]/10)) * 100;
     // Round up and remove decimal points
     percentageAudioLevel = ceil(percentageAudioLevel);
     // Limit upper value of audio to 100
