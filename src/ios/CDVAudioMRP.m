@@ -40,6 +40,7 @@
     self.isMeteringEnabled = meteringEnabled;
     self.currDuration = -1;
     
+    self.avSession = [AVAudioSession sharedInstance];
     NSLog(@"********* Checking if gain is settable");
     if (self.avSession.isInputGainSettable) {
         NSLog(@"********* GAIN SET");
@@ -455,8 +456,8 @@
                 avPlayer = nil;
             }
             if (self.avSession) {
-                //[self.avSession setActive:NO error:nil];
-                //self.avSession = nil;
+                [self.avSession setActive:NO error:nil];
+                self.avSession = nil;
             }
             [[self soundCache] removeObjectForKey:mediaId];
             NSLog(@"iOS: AudioMRP with id %@ released", mediaId);
