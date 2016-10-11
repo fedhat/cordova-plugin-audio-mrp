@@ -20,7 +20,7 @@
 # cordova-plugin-audio-mrp
 
 
-This plugin provides the ability to record and play back audio files on an iOS device. It was forked from a fork of cordova-plugin-media and then heavily modified.
+This plugin provides the ability to record and play back audio files on an iOS device. This is a fork of cordova-plugin-makki-media, which in turn forks the Cordova Media Plugin, and then heavily modified.
 
 __NOTE__: The current implementation does not adhere to a W3C
 specification for media capture, and is provided for convenience only.
