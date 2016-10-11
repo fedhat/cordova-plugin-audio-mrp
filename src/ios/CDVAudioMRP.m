@@ -803,16 +803,19 @@
 - (BOOL)hasAudioSession
 {
     BOOL bSession = YES;
-    NSLog(@"********* GETTING AUDIO SESSION");
+
     if (!self.avSession) {
         NSError* error = nil;
         
         self.avSession = [AVAudioSession sharedInstance];
-        NSLog(@"********* Checking if gain is settable");
-        if (self.avSession.isInputGainSettable) {
-            NSLog(@"********* GAIN SET");
-            [self.avSession setInputGain: 0.75 error: &error];
-        }
+//        Does not work on iOS 9 and iPad 2. That is, isInputGainSettable is always false.
+//        and have not tested on other versions of iOS nor platforms. To similuate higher gain,
+//        I increased the sensitivity of the audio level conversion in reportAudioLevel()
+//        NSLog(@"********* Checking if gain is settable");
+//        if (self.avSession.isInputGainSettable) {
+//            NSLog(@"********* GAIN SET");
+//            [self.avSession setInputGain: 0.75 error: &error];
+//        }
         if (error) {
             // is not fatal if can't get AVAudioSession , just log the error
             NSLog(@"error creating audio session: %@", [[error userInfo] description]);
@@ -942,10 +945,11 @@
     // the dB value can go into positive values.
    
     // Convert from dB to percentage
-    // Ten to the power of dB value divided by 20, multiplied by 100 to get percentage
-    // Formula: 10^(dB/20) * 100
+    // Ten to the power of dB value divided by 40, multiplied by 100 to get percentage
+    // Formula: 10^(dB/40) * 100
     // (NOTE: By changing divide by to 10, you'll get a 'truer' conversion, but that also ads
-    // more variability -- a lower floor -- to the linear values.)
+    // more variability -- a lower floor -- to the linear values. Dividing by 40 simulates a mic
+    // with higher sensitivity)
     double percentageAudioLevel = (pow(10, [audioLevel doubleValue]/40)) * 100;
     // Round up and remove decimal points
     percentageAudioLevel = ceil(percentageAudioLevel);
@@ -953,8 +957,8 @@
     percentageAudioLevel = fmin(percentageAudioLevel, 100);
     int scaledAudioLevel = (int)percentageAudioLevel;
     
-    NSLog(@"iOS: Raw Audio Level   : %@", audioLevel);
-    NSLog(@"iOS: Scaled Audio Level: %@", [NSNumber numberWithInt: scaledAudioLevel]);
+    // NSLog(@"iOS: Raw Audio Level   : %@", audioLevel);
+    // NSLog(@"iOS: Scaled Audio Level: %@", [NSNumber numberWithInt: scaledAudioLevel]);
     
     NSString* mediaId = self.currMediaId;
     NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_AUDIO_LEVEL, [NSNumber numberWithInt: scaledAudioLevel]];
