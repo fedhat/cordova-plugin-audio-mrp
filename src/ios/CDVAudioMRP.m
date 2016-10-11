@@ -946,15 +946,15 @@
     // Formula: 10^(dB/20) * 100
     // (NOTE: By changing divide by to 10, you'll get a 'truer' conversion, but that also ads
     // more variability -- a lower floor -- to the linear values.)
-    double percentageAudioLevel = (pow(10, [audioLevel doubleValue]/10)) * 100;
+    double percentageAudioLevel = (pow(10, [audioLevel doubleValue]/40)) * 100;
     // Round up and remove decimal points
     percentageAudioLevel = ceil(percentageAudioLevel);
     // Limit upper value of audio to 100
     percentageAudioLevel = fmin(percentageAudioLevel, 100);
     int scaledAudioLevel = (int)percentageAudioLevel;
     
-    //NSLog(@"iOS: Raw Audio Level   : %@", audioLevel);
-    //NSLog(@"iOS: Scaled Audio Level: %@", [NSNumber numberWithInt: scaledAudioLevel]);
+    NSLog(@"iOS: Raw Audio Level   : %@", audioLevel);
+    NSLog(@"iOS: Scaled Audio Level: %@", [NSNumber numberWithInt: scaledAudioLevel]);
     
     NSString* mediaId = self.currMediaId;
     NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_AUDIO_LEVEL, [NSNumber numberWithInt: scaledAudioLevel]];
