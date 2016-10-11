@@ -40,6 +40,12 @@
     self.isMeteringEnabled = meteringEnabled;
     self.currDuration = -1;
     
+    NSLog(@"********* Checking if gain is settable");
+    if (self.avSession.isInputGainSettable) {
+        NSLog(@"********* GAIN SET");
+        [self.avSession setInputGain: 0.75];
+    }
+    
     CDVAMRPAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:NO forRecording:NO];
     
     NSLog(@"iOS: Creating AudioMRP Object with ID: %@, and isMetering: %s", mediaId, self.isMeteringEnabled ? "TRUE":"FALSE");
@@ -813,12 +819,6 @@
             NSLog(@"error creating audio session: %@", [[error userInfo] description]);
             self.avSession = nil;
             bSession = NO;
-        } else {
-            NSLog(@"********* Checking if gain is settable");
-            if (self.avSession.isInputGainSettable) {
-                NSLog(@"********* GAIN SET");
-                [self.avSession setInputGain: 0.75];
-            }
         }
     }
     return bSession;
