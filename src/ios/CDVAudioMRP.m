@@ -642,7 +642,7 @@
 
 // Creates or gets the cached audio file resource object
 - (CDVAMRPAudioFile*)audioFileForResource:(NSString*)resourcePath withId:(NSString*)mediaId doValidation:(BOOL)bValidate forRecording:(BOOL)bRecord {
-    NSLog(@"iOS: 15:37 Creating audioFile: path: %@, id: %@", resourcePath, mediaId);
+    NSLog(@"iOS: Creating audioFile: path: %@, id: %@", resourcePath, mediaId);
     
     BOOL bError = NO;
     CDVAMRPMediaError errcode = MEDIA_ERR_NONE_SUPPORTED;
