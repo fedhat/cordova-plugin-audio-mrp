@@ -307,9 +307,7 @@
     if (playerError != nil) {
         NSLog(@"iOS: Failed to initialize AVAudioPlayer: %@\n", [playerError localizedDescription]);
         audioFile.player = nil;
-        if (self.avSession) {
-            [self.avSession setActive:NO error:nil];
-        }
+        
         bError = YES;
     } else {
         NSLog(@"iOS: prepareToPlay: Created media player");
@@ -598,9 +596,7 @@
                     NSString* msg = @"iOS: Error creating audio session, microphone permission denied.";
                     NSLog(@"%@", msg);
                     audioFile.recorder = nil;
-                    if (weakSelf.avSession) {
-                        [weakSelf.avSession setActive:NO error:nil];
-                    }
+                    
                     jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_ABORTED message:msg]];
                     [weakSelf.commandDelegate evalJs:jsString];
                 }
@@ -885,10 +881,6 @@
     NSString* mediaId = self.currMediaId;
     NSString* jsString = nil;
     jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-audio-mrp.AudioMRP').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_COMPLETE];
-
-    if (self.avSession) {
-        [self.avSession setActive:NO error:nil];
-    }
     
     [self stopAudioMetering];
     [self.commandDelegate evalJs:jsString];
